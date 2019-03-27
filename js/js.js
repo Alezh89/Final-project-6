@@ -1,4 +1,5 @@
-//create a playground
+
+//create a playground ***************************
 
 var cell = {
 	hasObject: false,	
@@ -23,7 +24,7 @@ for (var x=0; x<9; x++) {
 	};
 };
 
-//put hindrance
+//put hindrance ***************************
 
 function randomInt(length){
 	randNumber = Math.floor(Math.random() * (length));
@@ -33,13 +34,13 @@ function randomInt(length){
 
 var getRundNumber = 0;
 for (var i=0; i<8; i++) {	
-			getRundNumber = randomInt(playGround.length);			
-			playGround[getRundNumber].hasObject = true;	
-			$("span").eq(getRundNumber).addClass('cellHindrance');			
-		};			
+	getRundNumber = randomInt(playGround.length);			
+	playGround[getRundNumber].hasObject = true;	
+	$("span").eq(getRundNumber).addClass('cellHindrance');			
+};			
 
 
-//put players and create var for their position
+//put players and create var for their position ***************************
 
 var positionPlayer1 = randomInt(playGround.length);			
 playGround[positionPlayer1].hasObject = true;	
@@ -50,15 +51,15 @@ playGround[positionPlayer2].hasObject = true;
 $("span").eq(positionPlayer2).addClass('cellPlayer2');
 
 
-//move
+//move ***************************
 
 movePlayer1();
 
 function findPossibeMove(position){
-var canMove = [];
-var possibleMove = [position-1, position-2, position-3, position+1, position+2, position+3, position-9, position-18, position-27, position+9, position+18, position+27];
+	var canMove = [];
+	var possibleMove = [position-1, position-2, position-3, position+1, position+2, position+3, position-9, position-18, position-27, position+9, position+18, position+27];
 
-//can move left?
+//can move left? ***************************
 
 for(var i=0; i<3; i++){
 	if(possibleMove[i]>=0 && possibleMove[i]<playGround.length && !playGround[possibleMove[i]].hasObject) {
@@ -68,7 +69,7 @@ for(var i=0; i<3; i++){
 	}
 };
 
-//can move right?
+//can move right? ***************************
 
 for(var i=3; i<6; i++){
 	if(possibleMove[i]>=0 && possibleMove[i]<playGround.length && !playGround[possibleMove[i]].hasObject) {
@@ -78,7 +79,7 @@ for(var i=3; i<6; i++){
 	}
 };
 
-//can move up?
+//can move up? ***************************
 
 for(var i=6; i<9; i++){
 	if(possibleMove[i]>=0 && possibleMove[i]<playGround.length && !playGround[possibleMove[i]].hasObject) {
@@ -88,7 +89,7 @@ for(var i=6; i<9; i++){
 	}
 };
 
-//can move down?
+//can move down? ***************************
 
 for(var i=9; i<12; i++){
 	if(possibleMove[i]>=0 && possibleMove[i]<playGround.length && !playGround[possibleMove[i]].hasObject) {
@@ -105,15 +106,45 @@ for(var i=0; i<canMove.length; i++) {
 return canMove;
 };
 
+
+//palyers movements ***************************
+
 function movePlayer1() {
-	findPossibeMove(positionPlayer1);
+	var canMove = findPossibeMove(positionPlayer1);
+
+	for(var i=0; i<canMove.length; i++){
+		$("span").eq(canMove[i]).on('click', function () {			
+			playGround[positionPlayer1].hasObject = false;
+			$("span").eq(positionPlayer1).removeClass('cellPlayer1');
+			positionPlayer1 = canMove[i];	                                      //does this work?
+			playGround[positionPlayer1].hasObject = true;
+			$("span").eq(positionPlayer1).addClass('cellPlayer1');			
+		});
+		clearPlayGround();
+			movePlayer2();
+	};
 };
 
 function movePlayer2() {
-	move
+	var canMove = findPossibeMove(positionPlayer2);
+
+	for(var i=0; i<canMove.length; i++){
+		$("span").eq(canMove[i]).on('click', function () {
+			positionPlayer2 = canMove[i];	
+			clearPlayGround();
+			movePlayer1();		
+		});
+		
+	};
 };
 
-//create objects
+function clearPlayGround(){
+	$("span").each(function(){
+		$(this).removeClass("cellCanMove");
+	});	
+};
+
+//create objects ***************************
 
 // Player set
 /*
@@ -129,4 +160,4 @@ var Weapon = {
 }
 */
 
-//check if someone won
+//check if someone won ***************************
