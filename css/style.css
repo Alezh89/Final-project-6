@@ -1,0 +1,47 @@
+#playGround{
+	display: grid;
+	grid-template-columns: repeat(9, 48px);
+   	grid-template-rows: repeat(9, 48px);		
+	margin-top: 50px;
+}
+
+.cell {
+	width: 50px;
+	height: 50px;	
+	border: 2px solid black;
+	
+}
+
+/* Cells content
+==========================*/
+.cellHindrance {
+background-color: black;
+}
+
+.cellPlayer1 {
+background-color: green;
+}
+
+.cellPlayer2 {
+background-color: blue;
+}
+
+.cellCanMove {	
+background-color: grey;
+}
+
+.cellWeapon1 {
+
+}
+
+.cellWeapon2 {
+
+}
+
+.cellWeapon3 {
+
+}
+
+.cellWeapon4 {
+
+}
