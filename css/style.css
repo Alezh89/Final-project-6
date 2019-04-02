@@ -1,3 +1,10 @@
+html, body {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	
+}
+
 #playGround{
 	display: grid;
 	grid-template-columns: repeat(9, 48px);
@@ -8,40 +15,99 @@
 .cell {
 	width: 50px;
 	height: 50px;	
-	border: 2px solid black;
-	
+	border: 2px solid black;	
+}
+
+#playGame {
+	margin-top: 100px;
+}
+
+h2 {
+	color: white;
+}
+
+input {
+	margin-top: 50px;
+}
+
+.blue{
+color:blue;
+}
+
+.red{
+color:red;
+}
+
+ul {
+	list-style: none;
+}
+
+img {
+	margin-left: 150px;
+}
+
+.logoPlayer1 {
+	background:url(png/001-military.png) no-repeat center center;	
+	width: 80px;
+	height: 80px;
+	margin: auto auto;
+}
+
+.logoPlayer2 {
+	background:url(png/002-military-1.png) no-repeat center center;	
+	width: 80px;
+	height: 80px;
+	margin: auto auto;
 }
 
 /* Cells content
 ==========================*/
-.cellHindrance {
-background-color: black;
+.cellHindrance {		
+	background:url(png/tent.png) no-repeat center center;	
+	width: 50px;
+	height: 50px;
 }
 
 .cellPlayer1 {
-background-color: green;
+	background:url(png/001-military.png) no-repeat center center;	
+	width: 50px;
+	height: 50px;
 }
 
 .cellPlayer2 {
-background-color: blue;
+	background:url(png/002-military-1.png) no-repeat center center;	
+	width: 50px;
+	height: 50px;
 }
 
 .cellCanMove {	
-background-color: grey;
-}
-
-.cellWeapon1 {
-
+	background:url(png/circular-target.png) no-repeat center center;	
+	width: 50px;
+	height: 50px;
+	border-radius: 10px;
 }
 
 .cellWeapon2 {
-
+	background:url(png/001-handgun.png) no-repeat center center;	
+	width: 50px;
+	height: 50px;
 }
 
 .cellWeapon3 {
-
+	background:url(png/002-rifle.png) no-repeat center center;	
+	width: 50px;
+	height: 50px;
 }
 
-.cellWeapon4 {
-
+.cellWeapon1 {
+	background:url(png/004-knife.png) no-repeat center center;	
+	width: 50px;
+	height: 50px;
 }
+
+.cellMedicine {
+	background:url(png/003-aid.png) no-repeat center center;	
+	width: 50px;
+	height: 50px;
+}
+
