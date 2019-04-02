@@ -11,30 +11,43 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">  
   <link href="css/style.css" rel="stylesheet">    
   <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
   
 
 </head>
 
 <body>
 	<div class="row col-12">
-	<div class="col-4 text-center">
-		<h1>Player 1</h1>
+	<div class="offset-1 col-2 justify-content-center text-center animated pulse">
+		<h1>Player 1<div class="logoPlayer1"></div></h1>
 		<div>Health</div>
-		<div id="player1Health">100</div>
+		<div class="red" id="player1Health">100</div>
 		<div>Weapon</div>
-		<div id="player1Weapon">No</div>
+		<div class="red" id="player1Weapon">No</div>
+		<div>Attack</div>
+		<div class="red" id="player1Attack">5</div>
 	</div>
-	<div class="col-4" id="playGround"></div>
-	<div  class="col-4 text-center">
-		<h1>Player 2</h1>
+	<div class="col-6 playGround justify-content-center text-center"><input id="playGame" class="button animated pulse" value="Start the game" type="button" onclick="startGame()">
+		<ul class='pt-5 text-left' id='gameRules'>
+			<li><img class='cellHindrance'><span class='pl-3'>tent: no move</span></li>
+			<li><img class='cellWeapon1'><span class='pl-3'>knife: gives +15 to attack</span></li>
+			<li><img class='cellWeapon2'><span class='pl-3'>gun: gives +20 to attack</span></li>
+			<li><img class='cellWeapon3'><span class='pl-3'>rifle: gives +25 to attack</span></li>
+		</ul>
+	
+	</div>
+	<div  class="col-2 justify-content-center text-center animated pulse">
+		<h1>Player 2<div class="logoPlayer2"></div></h1>
 		<div>Health</div>
-		<div id="player2Health">100</div>
+		<div class="blue" id="player2Health">100</div>
 		<div>Weapon</div>
-		<div id="player2Weapon">No</div>
+		<div class="blue" id="player2Weapon">No</div>
+		<div>Attack</div>
+		<div class="blue" id="player2Attack">5</div>
 	</div>
 	</div>
 	<div class="row col-12 justify-content-center pt-3 text-center" id="result">
-		<div>Your move<div id="whoMoves">Player 1</div></div>
+		<h2>Your move<div id="whoMoves">Player 1</div></h2>
 	</div>	
 <script src="js/js.js"></script>
 </body>
