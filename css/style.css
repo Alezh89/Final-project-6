@@ -1,5 +1,5 @@
 html, body {
-	width: 100%;
+	min-width: 1100px;
 	margin-left: auto;
 	margin-right: auto;
 	
@@ -7,8 +7,7 @@ html, body {
 
 #playGround{
 	display: grid;
-	grid-template-columns: repeat(9, 48px);
-   	grid-template-rows: repeat(9, 48px);		
+			
 	margin-top: 50px;
 }
 
@@ -42,9 +41,7 @@ ul {
 	list-style: none;
 }
 
-img {
-	margin-left: 150px;
-}
+
 
 .logoPlayer1 {
 	background:url(png/001-military.png) no-repeat center center;	
@@ -105,8 +102,20 @@ img {
 	height: 50px;
 }
 
+.cellWeapon4 {
+	background:url(png/002-grenade.png) no-repeat center center;	
+	width: 50px;
+	height: 50px;
+}
+
 .cellMedicine {
 	background:url(png/003-aid.png) no-repeat center center;	
+	width: 50px;
+	height: 50px;
+}
+
+.cellHelicopter {
+	background:url(png/001-helicopter.png) no-repeat center center;	
 	width: 50px;
 	height: 50px;
 }
