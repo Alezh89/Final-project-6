@@ -7,9 +7,12 @@ function startGame(){
 }
 
 let whosTurn = 1;
+const sizePlayGround = 9; // Is used in defining proportions of the playground and number of ostacles. Should be not more than 15 max!
 const playGround = [];
 let player1;
 let player2;
+let movingPlayer;
+let enemy;
 let weapons = [];
 let someoneWon = false;
 
@@ -18,12 +21,28 @@ let someoneWon = false;
 function gamePlay(){
 
 	
-	checkIfWon();
-	if (whosTurn === 1) {
-		makeMove(player1.position);
-	} else {
-		makeMove(player2.position);
+	if(!checkIfWon()){
+		if (whosTurn === 1) {
+			movingPlayer = player1;
+			enemy = player2;		
+		} else {
+			movingPlayer = player2;
+			enemy = player1;		
+		}
+		movingPlayer.makeMove();
 	}
+}
+
+// change the turn between players
+
+function changeTurn(){
+	if (whosTurn === 1){									
+		whosTurn = 2;	
+		$('#whoMoves').text(player2.name);	
+	} else {								
+		whosTurn = 1;
+		$('#whoMoves').text(player1.name);
+	}	
 }
 
 //create a playground ***************************
@@ -32,263 +51,457 @@ function createPlayGround (){
 	$('input').remove('#playGame');
 	$('ul').remove('#gameRules');	
 	$('.playGround').attr('id','playGround');
+	$('#playGround').text('');
+	$('#playGround').css('grid-template-columns',`repeat(${sizePlayGround}, 48px)`);
+	$('#playGround').css('grid-template-rows',`repeat(${sizePlayGround}, 48px)`);	
 	$('h2').css('color', 'black');
-	var cell = { 
-		hasObject: false,
-		hasWeapon: false,		
-	}
+	let playground = document.getElementById('playGround');
 
-	for (var x=0; x<9; x++) {
-		for (var y=0; y<9; y++) {
-			var timely = document.getElementById('playGround');
-			var cellCreate = Object.create(cell);			
-			cellCreate.hasObject = false;	
-			cellCreate.hasWeapon = false;
-			playGround.push(cellCreate);
-			var newCell = document.createElement('span');		
-			timely.appendChild(newCell);
-			newCell.classList.add('cell');			
+	for (let x=0; x<sizePlayGround; x++) {
+		let array = new Array();
+		playGround.push(array);
+		for (let y=0; y<sizePlayGround; y++) {			
+			let cell = new Object();
+			cell.coordinates = [x, y];		
+			cell.hasWeapon = false; // Weapon it is something that can be picked up - you can move there
+			cell.hasObject = false; // Object it is something that can't be picked up - you can't move there
+			cell.hasPlayer = false;		
+			array.push(cell);
+			let newCell = document.createElement('span');		
+			playground.appendChild(newCell);
+			newCell.classList.add('cell');	
+			newCell.id = `${x}${y}`;
 
-		};
+		};		
 	};
 
+	
 //define obstacles
 
-for (let i=0; i<8; i++) {	
-	let getRundNumber = randomInt(playGround.length);			
-	playGround[getRundNumber].hasObject = true;	
-	$("span").eq(getRundNumber).addClass('cellHindrance').addClass('animated').addClass('zoomIn');
+for (let i=0; i<=sizePlayGround; i++) {	
+	let rundNum = randomInt(sizePlayGround);			
+	playGround[rundNum[0]][rundNum[1]].hasObject = true;	
+	$(`#${rundNum[0]}${rundNum[1]}`).addClass('cellHindrance').addClass('animated').addClass('zoomIn');
 }
 
-//put weapons *************************** 
+//put weapons and items *************************** 
 
 
 placeWeapon('knife', 15, 'cellWeapon1');
 placeWeapon('gun', 20, 'cellWeapon2');
-placeWeapon('rifle', 25, 'cellWeapon3');			
-
+placeWeapon('rifle', 25, 'cellWeapon3');	
+placeWeapon('granade', 10, 'cellWeapon4')
+placeItem(helicopter);
+placeItem(medicine);
+helicopter.cssclass = 'cellHelicopter';
+medicine.cssclass = 'cellMedicine';
 }
 
+function placeItem(item){
+	let positionItem = 0;
+	positionItem = randomInt(sizePlayGround);
+	item.position = positionItem;
+	playGround[positionItem[0]][positionItem[1]].hasWeapon = true;
+	$(`#${positionItem[0]}${positionItem[1]}`).addClass(item.cssclass).addClass('animated').addClass('bounce');
+}
+
+
 function placeWeapon(name, attack, css){
-	let positionWeapon = 0;
-	positionWeapon = randomInt(playGround.length);
+	let positionWeapon = randomInt(sizePlayGround);
 	const weapon = new Weapon(positionWeapon, name, attack, css);
-	playGround[positionWeapon].hasWeapon = true;
-	$("span").eq(positionWeapon).addClass(css).addClass('animated').addClass('bounce');	
+	playGround[positionWeapon[0]][positionWeapon[1]].hasWeapon = true;
+	$(`#${positionWeapon[0]}${positionWeapon[1]}`).addClass(css).addClass('animated').addClass('bounce');	
 	weapons.push(weapon);
 }
 
+
 // gives a random number *************************** 
 
-function randomInt(length){
-	let randNumber = 0;
+function randomInt(length){	
+	let x = 0;
+	let y = 0;
 	do {
-		randNumber = Math.floor(Math.random() * (length));
-	} while (playGround[randNumber].hasObject || playGround[randNumber].hasWeapon);
-	return randNumber;
+		x = Math.floor(Math.random() * (length));
+		y = Math.floor(Math.random() * (length));
+	} while (playGround[x][y].hasObject || playGround[x][y].hasWeapon);
+	return [x, y];
 };
-
 
 
 //put players and create var for their position *************************** 
 
 function createPlayers(){
-	let random = 0;
-	do {
-		random = randomInt(playGround.length);
-	} while (playGround[random].hasObject);
-
-	player1 = new Player(random, 'Player 1', 100, 'No', 5);
-	playGround[random].hasObject = true;
-
-	do {
-		random = randomInt(playGround.length);
-	} while (playGround[random].hasObject);
-
-	player2 = new Player(random, 'Player 2', 100, 'No', 5);
-	playGround[random].hasObject = true;
 	
-	$("span").eq(player1.position).addClass('cellPlayer1');
-	$("span").eq(player2.position).addClass('cellPlayer2');
+	player1 = new Player([0, 0], 'Player 1', 100, 'fists', 5, 'cellPlayer1');
+	player2 = new Player([0, 0], 'Player 2', 100, 'fists', 5, 'cellPlayer2');	
+	player1.placePlayer(randomInt(sizePlayGround));	
+
+	let [xEn, yEn] = player1.position;
+	let notNearPlayer1 = randomInt(sizePlayGround);
+	let [x, y] = notNearPlayer1;
+
+	// place Player 2 not near Player 1
+
+
+	while ((x-1 === xEn && y === yEn) || (x === xEn && y-1 === yEn) || (x === xEn && y+1 === yEn) || (x+1 === xEn && y === yEn)){
+		notNearPlayer1 = randomInt(sizePlayGround);
+		[x, y] = notNearPlayer1;
+		alert('This!');
+	}
+
+
+	player2.placePlayer(notNearPlayer1);
+
+	$('#player1Weapon').text(player1.weapon);
+	$('#player1Attack').text(player1.attack);
+	$('#player2Weapon').text(player2.weapon);
+	$('#player2Attack').text(player2.attack);
+	$('#player1Health').text(player2.health);
+	$('#player2Health').text(player2.health);
 }
 
 
 
-//move ***************************
+//define possible moves ***************************
 
 function findPossibeMove(position){
-	let canMove = [];
-	const possibleMove = [position-1, position-2, position-3, position+1, position+2, position+3, position-9, position-18, position-27, position+9, position+18, position+27];
+	const [x, y] = position;
+	let canMove = [];	
 
 //can move left? ***************************
 
-for(let i=0; i<3; i++){
-	if(possibleMove[i]>=0 && possibleMove[i]<playGround.length && !playGround[possibleMove[i]].hasObject) {
-		canMove.push(possibleMove[i]);
+let finishLine = sizePlayGround - 1;
+
+for(let i=1;i<=3;i++){
+	if ((y-i)>=0){
+		if(!playGround[x][y-i].hasObject){
+			canMove.push(playGround[x][y-i]);
+			$(`#${x}${y-i}`).addClass('cellCanMove');
+		} else {
+			break;
+		}
+	} else if ((y-i)<0 && !playGround[x][finishLine].hasObject) {		
+		canMove.push(playGround[x][finishLine]);
+		$(`#${x}${finishLine}`).addClass('cellCanMove');
+		finishLine--;
 	} else {
+		finishLine = 0;
 		break;
 	}
-};
+}
+
 
 //can move right? ***************************
 
-for(let i=3; i<6; i++){
-	if(possibleMove[i]>=0 && possibleMove[i]<playGround.length && !playGround[possibleMove[i]].hasObject) {
-		canMove.push(possibleMove[i]);
+let startLine = 0;
+for(let i=1;i<=3;i++){
+	if ((y+i)<sizePlayGround){
+		if(!playGround[x][y+i].hasObject){
+			canMove.push(playGround[x][y+i]);
+			$(`#${x}${y+i}`).addClass('cellCanMove');
+		} else {
+			break;
+		}
+	} else if ((y+i)>=sizePlayGround && !playGround[x][startLine].hasObject) {		
+		canMove.push(playGround[x][startLine]);
+		$(`#${x}${startLine}`).addClass('cellCanMove');
+		startLine++;
 	} else {
+		startLine = 0;
 		break;
 	}
-};
+}
+
 
 //can move up? ***************************
 
-for(let i=6; i<9; i++){
-	if(possibleMove[i]>=0 && possibleMove[i]<playGround.length && !playGround[possibleMove[i]].hasObject) {
-		canMove.push(possibleMove[i]);
+let finishBottom = sizePlayGround - 1;
+
+for(let i=1;i<=3;i++){
+	if ((x-i)>=0){
+		if(!playGround[x-i][y].hasObject){
+			canMove.push(playGround[x-i][y]);
+			$(`#${x-i}${y}`).addClass('cellCanMove');
+		} else {
+			break;
+		}
+	} else if ((x-i)<0 && !playGround[finishBottom][y].hasObject) {		
+		canMove.push(playGround[finishBottom][y]);
+		$(`#${finishBottom}${y}`).addClass('cellCanMove');
+		finishBottom--;
 	} else {
+		finishBottom = 0;
 		break;
 	}
-};
+}
 
 //can move down? ***************************
 
-for(let i=9; i<12; i++){
-	if(possibleMove[i]>=0 && possibleMove[i]<playGround.length && !playGround[possibleMove[i]].hasObject) {
-		canMove.push(possibleMove[i]);
+let startTop = 0;
+for(let i=1;i<=3;i++){
+	if ((x+i)<sizePlayGround){
+		if(!playGround[x+i][y].hasObject){
+			canMove.push(playGround[x+i][y]);
+			$(`#${x+i}${y}`).addClass('cellCanMove');
+		} else {
+			break;
+		}
+	} else if ((x+i)>=sizePlayGround && !playGround[startTop][y].hasObject) {		
+		canMove.push(playGround[startTop][y]);
+		$(`#${startTop}${y}`).addClass('cellCanMove');
+		startTop++;
 	} else {
+		startTop = 0;
 		break;
 	}
-};
-
-//if there the opponent? ********************************************
-
-for(let i=0; i<possibleMove.length; i++) {
-	if(whosTurn === 1) {
-	if (player2.position === possibleMove[i]) {
-		canMove.push(possibleMove[i]);
-	}
-} else if (whosTurn === 2) {
-	if (player1.position === possibleMove[i]) {
-		canMove.push(possibleMove[i]);
-	}
-}
 }
 
-
-
-for(let i=0; i<canMove.length; i++) {
-	if (!playGround[canMove[i]].hasObject){
-	$("span").eq(canMove[i]).addClass('cellCanMove');	
-	}			
-};
 return canMove;
 };
 
+// check if enemy is near and can be attacked *****************************************
+
+function whereIsEnemy(){
+	let [x, y] = movingPlayer.position;	
+	let canAttack = false;
+	let hasGranade = false;	
+	if(movingPlayer.weapon === 'granade'){
+		hasGranade = true;
+	}			
+	let [xEn, yEn] = enemy.position;	
+
+
+// with granade x2 range
+
+if(hasGranade){
+	if((x-2 === xEn && y === yEn) || (x-1 === xEn && y === yEn) || (x === xEn && y-2 === yEn) || (x === xEn && y-1 === yEn) || (x === xEn && y+2 === yEn) || (x === xEn && y+1 === yEn) || (x+2 === xEn && y === yEn) || (x+1 === xEn && y === yEn)){
+		canAttack = true;
+		
+	}
+
+//other weapons
+
+} else {
+	if((x-1 === xEn && y === yEn) || (x === xEn && y-1 === yEn) || (x === xEn && y+1 === yEn) || (x+1 === xEn && y === yEn)){
+		canAttack = true;
+	}
+}
+
+
+return canAttack;
+
+}
 
 //clear playground ***************************
 
 function clearPlayGround(){
 	$("span").each(function(){
 		$(this).removeClass("cellCanMove");
-	});	
+		$(this).prop("onclick", null).off("click");
+	});		
 };
 
-//create objects ***************************
+function clearButtons(){
+	$('#attackButton').remove();
+}
+
+// Objects ******************************************************************************************
 
 class Player{
-	constructor(position, name, health, weapon, attack) {
+	constructor(position, name, health, weapon, attack, cssclass) {
 		this.position = position;
 		this.name = name;
 		this.health = health;
 		this.weapon = weapon;	
-		this.attack = attack;		
-	}
-	
-
-// check and take/change a weapon **********************************
-
-takeWeapon(compareCells) {	
-
-	for (let weapon of weapons){
-
-		if (compareCells === weapon.position) {
-			this.attack = weapon.attack + 5;
-			this.weapon = weapon.name;		
-			playGround[compareCells].hasWeapon = false;
-			$("span").eq(compareCells).removeClass(weapon.cssclass).removeClass('animated').removeClass('bounce');
-
-
-			let positionWeapon = 0;
-			positionWeapon = randomInt(playGround.length);
-			weapon.position = positionWeapon;
-			playGround[positionWeapon].hasWeapon = true;
-			$("span").eq(positionWeapon).addClass(weapon.cssclass).addClass('animated').addClass('bounce');	
-
-		}
+		this.attack = attack;	
+		this.cssclass = cssclass;
 	}
 
-	$('#player1Weapon').text(player1.weapon);
-	$('#player1Attack').text(player1.attack);
-	$('#player2Weapon').text(player2.weapon);
-	$('#player2Attack').text(player2.attack);
-	
-}
+	placePlayer(receivePosition){
+		let [x, y] = receivePosition;
+		playGround[x][y].hasObject = true;
+		playGround[x][y].hasPlayer = true;
+		$(`#${x}${y}`).addClass(this.cssclass).addClass('animated').addClass('flash');
+		this.position = receivePosition;
+	}
 
-makeAttack(){
-	if(this.name === player1.name){
-		player2.health -= this.attack;		
-		$('#player2Health').text(player2.health);	
-	} else if(this.name === player2.name)
-	player1.health -= this.attack;	
-	$('#player1Health').text(player1.health);	
-}
-}
+	removePlayer(){
+		let [x, y] = this.position;
+		playGround[x][y].hasObject = false;
+		playGround[x][y].hasPlayer = false;
+		$(`#${x}${y}`).removeClass(this.cssclass).removeClass('animated').removeClass('flash');
+	}
 
+	makeMove(){
+		let moves = findPossibeMove(this.position);
+		let [x, y] = this.position;
+		let couldAttack = false;
 
-function makeMove(pos){
-		let moves = findPossibeMove(pos);
-		console.log(moves);
-		for(let move of moves){			
-			$("span").eq( move ).on('click', { value: move }, function ( event ) {	//************** HERE value MOVE takes position of another player, but I have never clicked on it! I think it is looping here 	????????????????????		
-				console.log(moves);
-				console.log(move);
-				let newPosition = event.data.value;		
+		//find out if there is an anamy around *********************	 
 
-				if (whosTurn === 1) {
-					if (player2.position === newPosition) {
-						player1.makeAttack();
-						whosTurn = 2;
-					} else {						
-						$("span").eq(pos).removeClass('cellPlayer1').removeClass('animated').removeClass('flash');;				
-						$("span").eq(newPosition).addClass('cellPlayer1').addClass('animated').addClass('flash');	
-						player1.takeWeapon(newPosition);
-						player1.position = newPosition;
-						whosTurn = 2;
-						$('#whoMoves').text('Player 2');
-						playGround[pos].hasObject = false;					
-						playGround[newPosition].hasObject = true;
-					}
-				} else if (whosTurn === 2) {
-					if (player1.position === newPosition) {
-						player2.makeAttack();
-						whosTurn = 1;
+		if(whereIsEnemy()){
+			couldAttack = true;
+			let attackButton = document.createElement('button');				
+			attackButton.class = "btn btn-danger";
+			attackButton.id = 'attackButton';
+			$('#attackButton').attr('type','button');
+			if (whosTurn === 1) {
+				$( "#attackPlayer1" ).append(attackButton);			
+			} else {
+				$( "#attackPlayer2" ).append(attackButton);
+			}
+			$('#attackButton').text(`Attack enemy with your ${movingPlayer.weapon}`);
+
+		// 1. move with attack: attack if clicked button *********************
+
+		$('#attackButton').on('click', function ( event ) {	
+			movingPlayer.makeAttack();											
+			clearPlayGround();
+			clearButtons();
+			changeTurn();
+			gamePlay();
+		})
+	} else {
+		couldAttack = false;
+	}
+
+	for(let move of moves){	
+		let [newX, newY] = move.coordinates;
+
+		// 2. move if no posibility or don't want to attack *********************		
+
+		$(`#${newX}${newY}`).on('click', { value: move }, function ( event ) {	
+
+			if(newX === helicopter.position[0] && newY === helicopter.position[1]){
+				helicopterMove();
+			} else {
+				movingPlayer.takeWeapon(move.coordinates);	 //function to take a weapon if it is at the cell	
+				movingPlayer.takeMedicine(move.coordinates);				
+				movingPlayer.removePlayer();
+				movingPlayer.placePlayer(move.coordinates);		
+
+				// 3. if attack possibility appeared after move *********************	
+
+				if(!couldAttack && whereIsEnemy()){
+					let attackButton2 = document.createElement('button');				
+					attackButton2.class = "btn btn-danger";
+					attackButton2.id = 'attackButton';
+					$('#attackButton').attr('type','button');
+					if (whosTurn === 1) {
+						$( "#attackPlayer1" ).append(attackButton2);			
 					} else {
-						$("span").eq(pos).removeClass('cellPlayer2').removeClass('animated').removeClass('flash');
-						$("span").eq(newPosition).addClass('cellPlayer2').addClass('animated').addClass('flash');
-						player2.takeWeapon(newPosition);
-						player2.position = newPosition;	
-						whosTurn = 1;
-						$('#whoMoves').text('Player 1');
-						playGround[pos].hasObject = false;					
-						playGround[newPosition].hasObject = true;
-					}	
-				}	
-				moves = [];		
-				clearPlayGround();
-				gamePlay();
-			})
+						$( "#attackPlayer2" ).append(attackButton2);
+					}
+					$('#attackButton').text(`Attack enemy with your ${movingPlayer.weapon}`);
+					clearPlayGround();
+					$('#attackButton').on('click', function ( event ) {	
+						movingPlayer.makeAttack();													
+						clearButtons();
+						changeTurn();
+						gamePlay();
+					})
+				} else {				
+					clearPlayGround();
+					clearButtons();
+					changeTurn();
+					gamePlay();
+				}
+			}
+		})
+	}
+}
+
+	// check and take/change a weapon **********************************
+
+	takeWeapon(comparePosition) {	
+
+		for (let weapon of weapons){
+
+			if (comparePosition[0] === weapon.position[0] && comparePosition[1] === weapon.position[1]) {
+				if(this.weapon != 'fists'){
+					for (let gun of weapons){
+						if (gun.name === this.weapon){
+							let positionWeapon = 0;
+							positionWeapon = randomInt(sizePlayGround);
+							gun.position = positionWeapon;
+							let [xWeapon, yWeapon] = positionWeapon;
+							playGround[xWeapon][yWeapon].hasWeapon = true;
+							$(`#${xWeapon}${yWeapon}`).addClass(gun.cssclass).addClass('animated').addClass('bounce');	
+						}
+					}
+				}
+
+				this.attack = weapon.attack + 5;
+				this.weapon = weapon.name;		
+				let [x, y] = comparePosition;
+				playGround[x][y].hasWeapon = false;
+				weapon.position = [];
+				$(`#${x}${y}`).removeClass(weapon.cssclass).removeClass('animated').removeClass('bounce');
+				$(`#player${whosTurn}Weapon`).empty();
+
+				let weaponPic = $('<img>');
+				weaponPic.attr('id',`weaponPic${whosTurn}`)
+				weaponPic.appendTo($(`#player${whosTurn}Weapon`));
+				$(`#weaponPic${whosTurn}`).addClass(`${weapon.cssclass}`)
+				$(`#player${whosTurn}Attack`).text(movingPlayer.attack);
+			}
 		}
 	}
+
+	makeAttack(){
+		enemy.health -= this.attack;							
+		$('#player2Health').text(player2.health);				
+		$('#player1Health').text(player1.health);		
+	}
+
+	takeMedicine(comparePosition){
+		let [x, y] = medicine.position;
+		if (comparePosition[0] === x && comparePosition[1] === y) {
+			this.health += 20;			
+			if(this.health>100){
+				this.health = 100;
+			}
+			$('#player2Health').text(player2.health);				
+			$('#player1Health').text(player1.health);
+			$(`#${x}${y}`).removeClass(medicine.cssclass).removeClass('animated').removeClass('bounce');	
+			placeItem(medicine);	
+			playGround[x][y].hasWeapon = false;							
+		}
+	}
+}
+
+function helicopterMove(){
+	let [newX, newY] = helicopter.position;	
+	let [x, y] = movingPlayer.position;
+	alert(`${movingPlayer.name} click to any cell where you want to fly`);
+	
+	$('.cell').each(function(){
+		$(this).on('click', function ( event ) {			
+			let flyHere = $(this).attr('id').split('');
+			flyHere = flyHere.map(Number);
+			let [flyX, flyY] = flyHere;			
+			movingPlayer.removePlayer();			
+			$(`#${newX}${newY}`).removeClass(helicopter.cssclass).addClass('animated').removeClass('bounce'); 	
+			playGround[newX][newY].hasObject = false;		
+
+			// check if there are weapons or medicine on the cell
+
+			movingPlayer.takeWeapon(flyHere);	 //function to take a weapon if it is at the cell	
+			movingPlayer.takeMedicine(flyHere);
+
+			movingPlayer.placePlayer(flyHere);		
+
+			//place helicopter back to the playground  removePlayer placePlayer
+
+			placeItem(helicopter);
+			changeTurn();
+			clearPlayGround();
+			clearButtons();
+			gamePlay();
+		})
+	})
+}
+
 
 class Weapon{
 	constructor(position, name, attack, cssclass){
@@ -299,18 +512,42 @@ class Weapon{
 	}
 }
 
+let helicopter = {		
+	position: [],
+	cssclass: 'cellHelicopter'		
+}
+
+let medicine = {		
+	position: [],
+	cssclass: 'cellMedicine',	
+	
+}
+
+
 //check if someone won ***************************
 
 function checkIfWon(){
+	let itsOver = false;
 	if (player1.health <= 0) {
-		gameOver('Player 2');		
+		gameOver('Player 2');	
+		itsOver = true;	
 	} else if (player2.health <= 0) {
 		gameOver('Player 1');
+		itsOver = true;
 	}
+	return itsOver;
 };
 
 function gameOver(winner){
 	$('#playGround').text(`Game over! ${winner} has won`);
 	$('#playGround').addClass('display-2');
-	$('#playGround').removeAttr('id');
+	$('#playGround').removeAttr('id');	
+	$('#turn').replaceWith('<input>')
+	$('input').attr('id', 'playGame').attr('value', 'Restart the game').attr('type', 'button');
+	$('#playGame').addClass('button');	
+
+	$('#playGame').on('click', function ( event ) {			
+		window.location.reload()		
+	})
+	
 }
