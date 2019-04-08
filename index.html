@@ -2,62 +2,92 @@
 <html>
 <head>
 
-  <meta charset="utf-8"> 
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Game OC project 6</title>
-  <meta name="description" content="Game OC project 6">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">  
-  <link href="css/style.css" rel="stylesheet">    
-  <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
-  
+	<meta charset="utf-8"> 
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Game OC project 6</title>
+	<meta name="description" content="Game OC project 6">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">  
+	<link href="css/style.css" rel="stylesheet">    
+	<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+	<link rel="icon" type="image/png" href="css/png/001-helicopter.png" sizes="32x32">  
 
 </head>
 
 <body>
-	<div class="row col-12">
-	<div class="offset-1 col-2 justify-content-center text-center animated pulse">
-		<h1>Player 1<div class="logoPlayer1"></div></h1>
-		<div>Health</div>
-		<div class="red" id="player1Health">100</div>
-		<div>Weapon</div>
-		<div class="red" id="player1Weapon">fists</div>
-		<div>Attack</div>
-		<div class="red" id="player1Attack">5</div>
+	<div class="row col-12 mx-0">
+		<div class="col-2 justify-content-center text-center animated pulse" id="attackPlayer1">
+			<h1><span id="player1Lable">Player 1</span><div class="logoPlayer1"></div></h1>
+			<div>Health</div>
+			<div class="red" id="player1Health">100</div>
+			<div>Weapon</div>
+			<div class="red" id="player1Weapon">fists</div>
+			<div>Attack</div>
+			<div class="red" id="player1Attack">5</div>
+		</div>
+		<div class="col-8 playGround justify-content-center text-center" id="names">
+
+			<div class="form-group row align-items-center">
+				<label for="player1Name" class="offset-sm-1 col-sm-3 col-form-label">Player 1 name (10 let. max)</label>
+				<div class="col-sm-6">
+					<input type="text" class="form-control mt-0" id="player1Name" value='Player 1'>
+				</div>
+			</div>
+
+			<div class="form-group row">
+				<label for="player2Name" class="offset-sm-1 col-sm-3 col-form-label">Player 2 name (10 let. max)</label>
+				<div class="col-sm-6">
+					<input type="text" class="form-control mt-0" id="player2Name" value='Player 2'>
+				</div>
+			</div>
+			<input id="playGame" class="btn btn-primary animated pulse" value="Start the game" type="button" onclick="startGame()">
+
+		</div>
+		<div  class="col-2 justify-content-center text-center animated pulse" id="attackPlayer2" >
+			<h1><span id="player2Lable">Player 2</span><div class="logoPlayer2"></div></h1>
+			<div>Health</div>
+			<div class="blue" id="player2Health">100</div>
+			<div>Weapon</div>
+			<div class="blue" id="player2Weapon">fists</div>
+			<div>Attack</div>
+			<div class="blue" id="player2Attack">5</div>
+		</div>
 	</div>
-	<div class="col-6 playGround justify-content-center text-center"><input id="playGame" class="button animated pulse" value="Start the game" type="button" onclick="startGame()">
-		<ul class='pt-5 text-left' id='gameRules'>
-			<li><img class='cellHindrance'><span class='pl-2'>No movement</span></li>
-			<li><img class='cellWeapon1'><span class='pl-2'>+15 to attack</span></li>
-			<li><img class='cellWeapon2'><span class='pl-2'>+20 to attack</span></li>
-			<li><img class='cellWeapon3'><span class='pl-2'>+25 to attack</span></li>
-			<li><img class='cellWeapon4'><span class='pl-2'>15 attack from any position</span></li>
-			<li><img class='cellMedicine'><span class='pl-2'>+10 to health</span></li>
-			<li><img class='cellHelicopter'><span class='pl-2'>Fly where you want on the playground</span></li>
-		</ul>
-	
+	<div class="row mx-0">
+		<div class="offset-1 col-2 justify-content-center text-center"></div>
+		<div class="row col-6 justify-content-center pt-3 text-center" id='controlPanel'>
+			<h2 id="turn" class='col-12 text-center'>Your move <span id="whoMoves">Player 1</span></h2>	
+			<input id="exit" class="btn btn-dark mt-2" value="Finish the game" type="button" onclick="window.location.reload()">	
+		</div>	
+		<div class="col-2 justify-content-center text-center"></div>
 	</div>
-	<div  class="col-2 justify-content-center text-center animated pulse">
-		<h1>Player 2<div class="logoPlayer2"></div></h1>
-		<div>Health</div>
-		<div class="blue" id="player2Health">100</div>
-		<div>Weapon</div>
-		<div class="blue" id="player2Weapon">fists</div>
-		<div>Attack</div>
-		<div class="blue" id="player2Attack">5</div>
+	<div class='row px-3 mx-0 pt-4' id='gameRules'>
+		<div class="col-sm-8">		
+			<h3 class='pb-3'>Instructions</h3>
+			<p>Welcome to the turn-based strategy "Local war" where two players by means of weapons and other items try to win by making to the other player 100 damage points.</p>
+			<p>Each player can move up to 3 cells horisontally or vertically, exept if there is a hindrance, then movements are limited.</p>
+			<p>From the beggining each player has the following points: 5 attack with fists and 100 health. Each player can improve his attack points by collecting weapons. Picking up a new weapon will replace the previous one.</p>
+			<p>Each player can attack the other player if players are in the neighbouring cells (not diagonally). With granede the attack range increases to 2 cells horisontally or vertically. </p>
+			<p>A player can attack only once: before or after move. But if the player had a chance to attack and didn't use it - he can't attack after the move.</p>
+			<p>If a player desides to defend himself - he can't move, but receives twice less damage.</p>
+
+		</div>
+		<div class="col-sm-4">
+			<h3 class='pb-3'>Special cells</h3>
+			<ul class='pl-0'>				
+				<li><img class='cellHindrance'><span class='pl-2'>No movement</span></li>
+				<li><img class='cellWeapon1'><span class='pl-2'>+15 to attack</span></li>
+				<li><img class='cellWeapon2'><span class='pl-2'>+20 to attack</span></li>
+				<li><img class='cellWeapon3'><span class='pl-2'>+25 to attack</span></li>
+				<li><img class='cellWeapon4'><span class='pl-2'>+10 to attack +1 cell long</span></li>
+				<li><img class='cellMedicine'><span class='pl-2'>+10 to health</span></li>
+				<li><img class='cellHelicopter'><span class='pl-2'>Fly where you want on the playground</span></li>
+			</ul>
+		</div>
 	</div>
-	</div>
-	<div class="row">
-	<div id="attackPlayer1" class="offset-1 col-2 justify-content-center text-center"></div>
-	<div class="row col-6 justify-content-center pt-3 text-center" id="result">
-		<h2 id="turn">Your move<span id="whoMoves"> Player 1</span></h2>	
-		<input id="exit" class="button" value="Fihish the game" type="button" onclick="window.location.reload()">	
-	</div>	
-	<div id="attackPlayer2" class="col-2 justify-content-center text-center"></div>
-</div>
-<script src="js/js.js"></script>
+	<script src="js/js.js"></script>
 </body>
 
 </html>
