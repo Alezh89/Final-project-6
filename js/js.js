@@ -1,20 +1,26 @@
-//start game and define variables *************************
 
-function startGame(){		
-	createPlayGround ();	
-	createPlayers();
-	gamePlay();
-}
-
+// set global variables
+$('#controlPanel').hide();
 let whosTurn = 1;
 const sizePlayGround = 9; // Is used in defining proportions of the playground and number of ostacles. Should be not more than 15 max!
 const playGround = [];
 let player1;
+let player1Name = 'Player 1';
 let player2;
+let player2Name = 'Player 2';
 let movingPlayer;
 let enemy;
 let weapons = [];
 let someoneWon = false;
+
+// start the game *************************
+
+function startGame(){			
+	createPlayGround ();	
+	createPlayers();		
+	$('#controlPanel').show();
+	gamePlay();
+}
 
 //gameplay main function ******************************
 
@@ -38,20 +44,21 @@ function gamePlay(){
 function changeTurn(){
 	if (whosTurn === 1){									
 		whosTurn = 2;	
-		$('#whoMoves').text(player2.name);	
+		$('#whoMoves').text(`${player2.name}`);	
 	} else {								
 		whosTurn = 1;
-		$('#whoMoves').text(player1.name);
+		$('#whoMoves').text(`${player1.name}`);
 	}	
 }
 
 //create a playground ***************************
 
-function createPlayGround (){
-	$('input').remove('#playGame');
-	$('ul').remove('#gameRules');	
+function createPlayGround (){	
+	player1Name = $('#player1Name').val();
+	player2Name = $('#player2Name').val();		
 	$('.playGround').attr('id','playGround');
-	$('#playGround').text('');
+	$('#playGround').empty();
+	$('#gameRules').empty();
 	$('#playGround').css('grid-template-columns',`repeat(${sizePlayGround}, 48px)`);
 	$('#playGround').css('grid-template-rows',`repeat(${sizePlayGround}, 48px)`);	
 	$('h2').css('color', 'black');
@@ -132,9 +139,25 @@ function randomInt(length){
 
 function createPlayers(){
 	
-	player1 = new Player([0, 0], 'Player 1', 100, 'fists', 5, 'cellPlayer1');
-	player2 = new Player([0, 0], 'Player 2', 100, 'fists', 5, 'cellPlayer2');	
+	player1 = new Player([0, 0], player1Name, 100, 'fists', 5, 'cellPlayer1');
+	player2 = new Player([0, 0], player2Name, 100, 'fists', 5, 'cellPlayer2');	
+	
+	// check the input
+
+	if (player1.name == '') {
+		player1.name = 'Player 1';
+	} else if (player1.name.length > 10){
+		player1.name =  player1.name.substring(0, 10);
+	}
+	if (player2.name == '') {
+		player2.name = 'Player 2';
+	} else if (player2.name.length > 10){
+		player2.name = player2.name.substring(0, 10);
+	}
+	$('#player1Lable').text(player1.name);
+	$('#player2Lable').text(player2.name);
 	player1.placePlayer(randomInt(sizePlayGround));	
+	$('#whoMoves').text(`${player1.name}`);
 
 	let [xEn, yEn] = player1.position;
 	let notNearPlayer1 = randomInt(sizePlayGround);
@@ -145,8 +168,7 @@ function createPlayers(){
 
 	while ((x-1 === xEn && y === yEn) || (x === xEn && y-1 === yEn) || (x === xEn && y+1 === yEn) || (x+1 === xEn && y === yEn)){
 		notNearPlayer1 = randomInt(sizePlayGround);
-		[x, y] = notNearPlayer1;
-		alert('This!');
+		[x, y] = notNearPlayer1;		
 	}
 
 
@@ -298,11 +320,15 @@ function clearPlayGround(){
 	$("span").each(function(){
 		$(this).removeClass("cellCanMove");
 		$(this).prop("onclick", null).off("click");
-	});		
+	});				
 };
 
 function clearButtons(){
 	$('#attackButton').remove();
+	$('#defendButton').remove();
+	$('#attackButton').prop("onclick", null).off("click");
+	$('#defendButton').prop("onclick", null).off("click");
+	enemy.defend = 'false';
 }
 
 // Objects ******************************************************************************************
@@ -337,79 +363,96 @@ class Player{
 		let [x, y] = this.position;
 		let couldAttack = false;
 
-		//find out if there is an anamy around *********************	 
+		// create the deffend button
+
+		createAttackDefendButtons('defend');		
+
+		//find out if there is an anamy around and create the attack button *********************	 
 
 		if(whereIsEnemy()){
 			couldAttack = true;
-			let attackButton = document.createElement('button');				
-			attackButton.class = "btn btn-danger";
-			attackButton.id = 'attackButton';
-			$('#attackButton').attr('type','button');
-			if (whosTurn === 1) {
-				$( "#attackPlayer1" ).append(attackButton);			
-			} else {
-				$( "#attackPlayer2" ).append(attackButton);
-			}
-			$('#attackButton').text(`Attack enemy with your ${movingPlayer.weapon}`);
+			createAttackDefendButtons('attack');
 
 		// 1. move with attack: attack if clicked button *********************
 
 		$('#attackButton').on('click', function ( event ) {	
-			movingPlayer.makeAttack();											
-			clearPlayGround();
-			clearButtons();
-			changeTurn();
-			gamePlay();
+			movingPlayer.makeAttack();			
 		})
-	} else {
-		couldAttack = false;
-	}
+		} else {
+			couldAttack = false; //if player didn't have a chance to attack, he can have it after movement
+		}
 
-	for(let move of moves){	
-		let [newX, newY] = move.coordinates;
+					// 2. defend button is clicked - no attack or movement ********************************
 
-		// 2. move if no posibility or don't want to attack *********************		
-
-		$(`#${newX}${newY}`).on('click', { value: move }, function ( event ) {	
-
-			if(newX === helicopter.position[0] && newY === helicopter.position[1]){
-				helicopterMove();
-			} else {
-				movingPlayer.takeWeapon(move.coordinates);	 //function to take a weapon if it is at the cell	
-				movingPlayer.takeMedicine(move.coordinates);				
-				movingPlayer.removePlayer();
-				movingPlayer.placePlayer(move.coordinates);		
-
-				// 3. if attack possibility appeared after move *********************	
-
-				if(!couldAttack && whereIsEnemy()){
-					let attackButton2 = document.createElement('button');				
-					attackButton2.class = "btn btn-danger";
-					attackButton2.id = 'attackButton';
-					$('#attackButton').attr('type','button');
-					if (whosTurn === 1) {
-						$( "#attackPlayer1" ).append(attackButton2);			
-					} else {
-						$( "#attackPlayer2" ).append(attackButton2);
-					}
-					$('#attackButton').text(`Attack enemy with your ${movingPlayer.weapon}`);
-					clearPlayGround();
-					$('#attackButton').on('click', function ( event ) {	
-						movingPlayer.makeAttack();													
-						clearButtons();
-						changeTurn();
-						gamePlay();
+					$('#defendButton').on('click', function ( event ) {
+						movingPlayer.defendSelf();
 					})
-				} else {				
-					clearPlayGround();
-					clearButtons();
-					changeTurn();
-					gamePlay();
-				}
-			}
-		})
+
+					for(let move of moves){	
+						let [newX, newY] = move.coordinates;
+
+
+									// 3. move if no posibility or don't want to attack and defend is not clicked *********************		
+
+									$(`#${newX}${newY}`).on('click', { value: move }, function ( event ) {	
+
+										if(newX === helicopter.position[0] && newY === helicopter.position[1]){
+											helicopterMove();
+										} else {
+											movingPlayer.takeWeapon(move.coordinates);	 //function to take a weapon if it is at the cell	
+											movingPlayer.takeMedicine(move.coordinates);				
+											movingPlayer.removePlayer();
+											movingPlayer.placePlayer(move.coordinates);		
+
+														// 4. if attack possibility appeared after move *********************	
+
+														if(!couldAttack && whereIsEnemy()){
+															createAttackDefendButtons('attack');
+															clearPlayGround();
+															$('#attackButton').on('click', function ( event ) {	
+																movingPlayer.makeAttack();						
+															})
+															$('#defendButton').on('click', function ( event ) {
+																movingPlayer.defendSelf();
+															})
+														} else {
+															clearPlayGround();
+															clearButtons();
+															changeTurn();
+															gamePlay();		
+														}		
+													}
+												})
+
+								}
+							}
+
+	makeAttack(){
+		if(enemy.defend == 'true'){
+			enemy.health = enemy.health - (this.attack / 2);
+		} else {
+			enemy.health -= this.attack
+		}
+		if (whosTurn == 1){										
+		$('#player2Health').text(player2.health).addClass('animated').addClass('heartBeat');				
+		$('#player1Health').removeClass('animated').removeClass('heartBeat');
+		} else {
+		$('#player2Health').removeClass('animated').removeClass('heartBeat');	
+		$('#player1Health').text(player1.health).addClass('animated').addClass('heartBeat');
+		}		
+		clearPlayGround();
+		clearButtons();
+		changeTurn();
+		gamePlay();
 	}
-}
+
+	defendSelf(){
+		this.defend = 'true';
+		clearPlayGround();
+		clearButtons();
+		changeTurn();
+		gamePlay();
+	}
 
 	// check and take/change a weapon **********************************
 
@@ -448,12 +491,6 @@ class Player{
 		}
 	}
 
-	makeAttack(){
-		enemy.health -= this.attack;							
-		$('#player2Health').text(player2.health);				
-		$('#player1Health').text(player1.health);		
-	}
-
 	takeMedicine(comparePosition){
 		let [x, y] = medicine.position;
 		if (comparePosition[0] === x && comparePosition[1] === y) {
@@ -470,6 +507,24 @@ class Player{
 	}
 }
 
+function createAttackDefendButtons(buttonAction){
+	let thisButton = document.createElement('button');			
+	thisButton.id = `${buttonAction}Button`;			
+	$(`#${buttonAction}Button`).attr('type','button');
+	if (whosTurn === 1) {
+		$( "#attackPlayer1" ).append(thisButton);			
+	} else {
+		$( "#attackPlayer2" ).append(thisButton);
+	}
+	if (buttonAction == 'attack'){
+		$(`#${buttonAction}Button`).addClass('btn').addClass('btn-danger');
+		$(`#${buttonAction}Button`).text(`Attack enemy with your ${movingPlayer.weapon}`);
+	} else {
+		$(`#${buttonAction}Button`).addClass('btn').addClass('btn-success');
+		$(`#${buttonAction}Button`).text('Defend (50% damage)');
+	} 
+}
+
 function helicopterMove(){
 	let [newX, newY] = helicopter.position;	
 	let [x, y] = movingPlayer.position;
@@ -481,7 +536,7 @@ function helicopterMove(){
 			flyHere = flyHere.map(Number);
 			let [flyX, flyY] = flyHere;			
 			movingPlayer.removePlayer();			
-			$(`#${newX}${newY}`).removeClass(helicopter.cssclass).addClass('animated').removeClass('bounce'); 	
+			$(`#${newX}${newY}`).removeClass(helicopter.cssclass).removeClass('animated').removeClass('bounce'); 	
 			playGround[newX][newY].hasObject = false;		
 
 			// check if there are weapons or medicine on the cell
@@ -504,11 +559,12 @@ function helicopterMove(){
 
 
 class Weapon{
-	constructor(position, name, attack, cssclass){
+	constructor(position, name, attack, cssclass, defend = 'false'){
 		this.position = position;
 		this.name = name;
 		this.attack = attack;
 		this.cssclass = cssclass;
+		this.defend = defend;
 	}
 }
 
@@ -529,21 +585,21 @@ let medicine = {
 function checkIfWon(){
 	let itsOver = false;
 	if (player1.health <= 0) {
-		gameOver('Player 2');	
+		gameOver(`${player2.name}`);	
 		itsOver = true;	
 	} else if (player2.health <= 0) {
-		gameOver('Player 1');
+		gameOver(`${player1.name}`);
 		itsOver = true;
 	}
 	return itsOver;
 };
 
 function gameOver(winner){
-	$('#playGround').text(`Game over! ${winner} has won`);
+	$('#playGround').text(`Game over! ${winner} won`).addClass('animated').addClass('zoomInDown');
 	$('#playGround').addClass('display-2');
 	$('#playGround').removeAttr('id');	
-	$('#turn').replaceWith('<input>')
-	$('input').attr('id', 'playGame').attr('value', 'Restart the game').attr('type', 'button');
+	$('#turn').empty();	
+	$('#exit').attr('value', 'Restart the game');
 	$('#playGame').addClass('button');	
 
 	$('#playGame').on('click', function ( event ) {			
