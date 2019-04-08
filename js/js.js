@@ -1,6 +1,5 @@
 
 // set global variables
-$('#controlPanel').hide();
 let whosTurn = 1;
 const sizePlayGround = 9; // Is used in defining proportions of the playground and number of ostacles. Should be not more than 15 max!
 const playGround = [];
@@ -15,17 +14,16 @@ let someoneWon = false;
 
 // start the game *************************
 
-function startGame(){			
+function startGame(){		
 	createPlayGround ();	
 	createPlayers();		
-	$('#controlPanel').show();
+	showPanel();
 	gamePlay();
 }
 
 //gameplay main function ******************************
 
 function gamePlay(){
-
 	
 	if(!checkIfWon()){
 		if (whosTurn === 1) {
@@ -38,6 +36,25 @@ function gamePlay(){
 		movingPlayer.makeMove();
 	}
 }
+
+function showPanel(){
+	let controlPanel = document.getElementById('controlPanel');
+	let youMoveSign = document.createElement('h2');	
+	controlPanel.append(youMoveSign);		
+	youMoveSign.id = 'turn';
+	$('#turn').addClass('col-12').addClass('text-center').text('Your move ');
+	let thisPlayerMove = document.createElement('span');
+	thisPlayerMove.id = 'whoMoves';
+	youMoveSign.append(thisPlayerMove);
+	$('#whoMoves').text('Player 1');
+	let buttonFinish = document.createElement('input');		
+	controlPanel.append(buttonFinish);	
+	buttonFinish.id = 'exit';
+	$('#exit').addClass('btn').addClass('btn-dark').addClass('mt-2').attr('value', 'Finish the game').attr('type', 'button').on('click', () => window.location.reload());
+	
+	
+				
+	}
 
 // change the turn between players
 
