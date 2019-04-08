@@ -465,7 +465,7 @@ class Player{
 
 	defendSelf(){
 		this.defend = 'true';
-		
+		clearPlayGround();
 		clearButtons();
 		changeTurn();
 		gamePlay();
