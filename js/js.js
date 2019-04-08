@@ -535,7 +535,7 @@ function createAttackDefendButtons(buttonAction){
 	}
 	if (buttonAction == 'attack'){
 		$(`#${buttonAction}Button`).addClass('btn').addClass('btn-danger');
-		$(`#${buttonAction}Button`).text(`Attack enemy with your ${movingPlayer.weapon}`);
+		$(`#${buttonAction}Button`).text(`Attack the enemy with your ${movingPlayer.weapon}`);
 	} else {
 		$(`#${buttonAction}Button`).addClass('btn').addClass('btn-success');
 		$(`#${buttonAction}Button`).text('Defend (50% damage)');
