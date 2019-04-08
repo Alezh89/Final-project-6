@@ -34,6 +34,7 @@ function gamePlay(){
 			enemy = player1;		
 		}
 		movingPlayer.makeMove();
+		movingPlayer.defend = false;
 	}
 }
 
@@ -344,8 +345,7 @@ function clearButtons(){
 	$('#attackButton').remove();
 	$('#defendButton').remove();
 	$('#attackButton').prop("onclick", null).off("click");
-	$('#defendButton').prop("onclick", null).off("click");
-	enemy.defend = 'false';
+	$('#defendButton').prop("onclick", null).off("click");	
 }
 
 // Objects ******************************************************************************************
@@ -412,7 +412,7 @@ class Player{
 									// 3. move if no posibility or don't want to attack and defend is not clicked *********************		
 
 									$(`#${newX}${newY}`).on('click', { value: move }, function ( event ) {	
-
+										clearButtons();
 										if(newX === helicopter.position[0] && newY === helicopter.position[1]){
 											helicopterMove();
 										} else {
@@ -424,12 +424,13 @@ class Player{
 														// 4. if attack possibility appeared after move *********************	
 
 														if(!couldAttack && whereIsEnemy()){
+															createAttackDefendButtons('defend');
 															createAttackDefendButtons('attack');
 															clearPlayGround();
 															$('#attackButton').on('click', function ( event ) {	
 																movingPlayer.makeAttack();						
 															})
-															$('#defendButton').on('click', function ( event ) {
+															$('#defendButton').on('click', function ( event ) {																
 																movingPlayer.defendSelf();
 															})
 														} else {
