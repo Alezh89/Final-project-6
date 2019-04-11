@@ -1,7 +1,7 @@
 
 // set global variables
 let whosTurn = 1;
-const sizePlayGround = 9; // Is used in defining proportions of the playground and number of ostacles. Should be not more than 15 max!
+const sizePlayGround = 10; // Is used in defining proportions of the playground and number of ostacles. Should be not more than 15 max!
 const playGround = [];
 let player1;
 let player1Name = 'Player 1';
@@ -43,16 +43,16 @@ function showPanel(){
 	let youMoveSign = document.createElement('h2');	
 	controlPanel.append(youMoveSign);		
 	youMoveSign.id = 'turn';
-	$('#turn').addClass('col-12').addClass('text-center').text('Your move ');
+	$('#turn').addClass('col-6').addClass('text-center').text('Your move ');
 	let thisPlayerMove = document.createElement('span');
 	thisPlayerMove.id = 'whoMoves';
 	youMoveSign.append(thisPlayerMove);
-	$('#whoMoves').text('Player 1');
+	$('#whoMoves').text(`${player1.name}`);
 	let buttonFinish = document.createElement('input');		
 	controlPanel.append(buttonFinish);	
 	buttonFinish.id = 'exit';
-	$('#exit').addClass('btn').addClass('btn-dark').addClass('mt-2').attr('value', 'Finish the game').attr('type', 'button').on('click', () => window.location.reload());
-	
+	$('#exit').addClass('btn').addClass('btn-dark').addClass('mt-0').attr('value', 'Finish the game').attr('type', 'button').on('click', () => window.location.reload());
+	$(controlPanel).addClass('mb-2');
 	
 				
 	}
@@ -72,14 +72,19 @@ function changeTurn(){
 //create a playground ***************************
 
 function createPlayGround (){	
+
 	player1Name = $('#player1Name').val();
 	player2Name = $('#player2Name').val();		
 	$('.playGround').attr('id','playGround');
 	$('#playGround').empty();
-	$('#gameRules').empty();
+	$('#hello').css('border-bottom', 'none');	
+	$('#specialCells').unwrap().removeClass('col-4').addClass('col-12');
+	$('ul>li').css('display', 'inline');
+	$('#gameRules').remove();
+	$('#instructions').remove();
+	$('#specCells').remove();
 	$('#playGround').css('grid-template-columns',`repeat(${sizePlayGround}, 48px)`);
 	$('#playGround').css('grid-template-rows',`repeat(${sizePlayGround}, 48px)`);	
-	$('h2').css('color', 'black');
 	let playground = document.getElementById('playGround');
 
 	for (let x=0; x<sizePlayGround; x++) {
@@ -196,11 +201,9 @@ function createPlayers(){
 	$('#player1Attack').text(player1.attack);
 	$('#player2Weapon').text(player2.weapon);
 	$('#player2Attack').text(player2.attack);
-	$('#player1Health').text(player2.health);
-	$('#player2Health').text(player2.health);
+	$('#player1Health').text(player1.health).attr('aria-valuenow', '100');
+	$('#player2Health').text(player2.health).attr('aria-valuenow', '100');
 }
-
-
 
 //define possible moves ***************************
 
@@ -447,16 +450,17 @@ class Player{
 
 	makeAttack(){
 		if(enemy.defend == 'true'){
-			enemy.health = enemy.health - (this.attack / 2);
+			enemy.health = enemy.health - (this.attack / 2);			
+
 		} else {
 			enemy.health -= this.attack
 		}
 		if (whosTurn == 1){										
-		$('#player2Health').text(player2.health).addClass('animated').addClass('heartBeat');				
+		$('#player2Health').text(player2.health).addClass('animated').addClass('heartBeat').attr('aria-valuenow', `${player2.health}`).css('width', `${player2.health}%`);			
 		$('#player1Health').removeClass('animated').removeClass('heartBeat');
 		} else {
 		$('#player2Health').removeClass('animated').removeClass('heartBeat');	
-		$('#player1Health').text(player1.health).addClass('animated').addClass('heartBeat');
+		$('#player1Health').text(player1.health).addClass('animated').addClass('heartBeat').attr('aria-valuenow', `${player1.health}`).css('width', `${player1.health}%`);
 		}		
 		clearPlayGround();
 		clearButtons();
@@ -516,8 +520,8 @@ class Player{
 			if(this.health>100){
 				this.health = 100;
 			}
-			$('#player2Health').text(player2.health);				
-			$('#player1Health').text(player1.health);
+			$('#player2Health').text(player2.health).attr('aria-valuenow', `${player2.health}`).css('width', `${player2.health}%`);				
+			$('#player1Health').text(player1.health).attr('aria-valuenow', `${player1.health}`).css('width', `${player1.health}%`);
 			$(`#${x}${y}`).removeClass(medicine.cssclass).removeClass('animated').removeClass('bounce');	
 			placeItem(medicine);	
 			playGround[x][y].hasWeapon = false;							
@@ -536,10 +540,10 @@ function createAttackDefendButtons(buttonAction){
 	}
 	if (buttonAction == 'attack'){
 		$(`#${buttonAction}Button`).addClass('btn').addClass('btn-danger');
-		$(`#${buttonAction}Button`).text(`Attack the enemy with your ${movingPlayer.weapon}`);
+		$(`#${buttonAction}Button`).text(`Attack with ${movingPlayer.weapon}`).attr('data-toggle', 'tooltip').attr('data-placement', 'top').attr('title', 'This attacks the enemy with the current weapon');		
 	} else {
 		$(`#${buttonAction}Button`).addClass('btn').addClass('btn-success');
-		$(`#${buttonAction}Button`).text('Defend (50% damage)');
+		$(`#${buttonAction}Button`).text('Defend').attr('data-toggle', 'tooltip').attr('data-placement', 'top').attr('title', 'This opt for self-defense and lower the power of enemy attack to 50%');
 	} 
 }
 
