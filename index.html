@@ -20,17 +20,19 @@
 </head>
 
 <body>
-	<div class="row col-12 mx-0 px-0">
-		<div class="col-2 justify-content-center text-center animated pulse" id="attackPlayer1">
-			<h1><span id="player1Lable">Player 1</span><div class="logoPlayer1"></div></h1>
+	<div class="row col-12 mx-0 px-0" id='hello'>
+		<div class="col-3 justify-content-center text-center animated pulse" id="attackPlayer1">
+			<h2><span id="player1Lable">Player 1</span><div class="logoPlayer1"></div></h2>
 			<div class='h5'>Health</div>
-			<div class="red h5" id="player1Health">100</div>
+			<div class="progress" style="height:2rem">
+			<div class="progress-bar" role="progressbar" style="width: 100%; height:2rem; font-size: 1.5rem; color:black; background-color: red " aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" id="player1Health">100</div>
+			</div>
 			<div class='h5'>Weapon</div>
 			<div class="red h5" id="player1Weapon">fists</div>
-			<div class='h5'>Attack</div>
+			<div class='h5'>Attack power</div>
 			<div class="red h5" id="player1Attack">5</div>
 		</div>
-		<div class="col-8 playGround justify-content-center text-center" id="names">
+		<div class="col-6 playGround justify-content-center text-center" id="names">
 
 			<div class="form-group row align-items-center">
 				<label for="player1Name" class="offset-sm-1 col-sm-3 col-form-label">Player 1 name</label>
@@ -48,13 +50,15 @@
 			<input id="playGame" class="btn btn-primary animated pulse" value="Start the game" type="button" onclick="startGame()">
 
 		</div>
-		<div  class="col-2 justify-content-center text-center animated pulse" id="attackPlayer2" >
-			<h1><span id="player2Lable">Player 2</span><div class="logoPlayer2"></div></h1>
+		<div  class="col-3 justify-content-center text-center animated pulse" id="attackPlayer2" >
+			<h2><span id="player2Lable">Player 2</span><div class="logoPlayer2"></div></h2>
 			<div class='h5'>Health</div>
-			<div class="blue h5" id="player2Health">100</div>
+			<div class="progress" style="height:2rem">
+			<div class="progress-bar bg-premier" role="progressbar" style="width: 100%; height:2rem; font-size: 1.5rem; color:black" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" id="player2Health">100</div>
+			</div>
 			<div class='h5'>Weapon</div>
 			<div class="blue h5" id="player2Weapon">fists</div>
-			<div class='h5'>Attack</div>
+			<div class='h5'>Attack power</div>
 			<div class="blue h5" id="player2Attack">5</div>
 		</div>
 	</div>
@@ -65,7 +69,7 @@
 		<div class="col-2 justify-content-center text-center"></div>
 	</div>
 	<div class='row px-3 mx-0 pt-4' id='gameRules'>
-		<div class="col-8">		
+		<div class="col-8" id="instructions">		
 			<h3 class='pb-3'>Instructions</h3>
 			<p>Welcome to the turn-based strategy "Local war" where two players by means of weapons and other items try to win by making to the other player 100 damage points.</p>
 			<p>Each player can move up to 3 cells horisontally or vertically, exept if there is a hindrance, then movements are limited.</p>
@@ -75,16 +79,16 @@
 			<p>If a player desides to defend himself - he can't move, but receives twice less damage.</p>
 
 		</div>
-		<div class="col-4">
-			<h3 class='pb-3'>Special cells</h3>
-			<ul class='pl-0'>				
+		<div class="col-4" id='specialCells'>
+			<h3 id='specCells'>Special cells</h3>
+			<ul class='pl-0 mt-3'>				
 				<li><img class='cellHindrance'><span class='pl-2'>No movement</span></li>
 				<li><img class='cellWeapon1'><span class='pl-2'>+15 to attack</span></li>
 				<li><img class='cellWeapon2'><span class='pl-2'>+20 to attack</span></li>
 				<li><img class='cellWeapon3'><span class='pl-2'>+25 to attack</span></li>
 				<li><img class='cellWeapon4'><span class='pl-2'>+10 to attack +1 cell long</span></li>
 				<li><img class='cellMedicine'><span class='pl-2'>+10 to health</span></li>
-				<li><img class='cellHelicopter'><span class='pl-2'>Fly where you want on the playground</span></li>
+				<li><img class='cellHelicopter'><span class='pl-2'>Fly where you want</span></li>
 			</ul>
 		</div>
 	</div>
