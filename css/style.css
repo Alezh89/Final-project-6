@@ -7,10 +7,13 @@ html, body {
 	
 }
 
+h2 {
+	color: #455D4D;
+}
+
 #playGround{
-	display: grid;
-			
-	margin-top: 50px;
+	display: grid;			
+	margin-top: 30px;
 }
 
 .cell {
@@ -29,18 +32,27 @@ html, body {
 	
 }
 
-#defendButton {
-	margin-top: 30px;
+#defendButton {	
+	width: 75%;
+	margin: 20px;
 }
 
 #attackButton
 {
-	margin-top: 20px;
-	max-width: 183px;
+	margin: 20px;
+	width: 75%;
 }
 
 input {
 	margin-top: 50px;
+}
+
+#hello {
+	border-bottom: 2px solid #F8A724;
+}
+
+#specialCells {
+	border-left: 2px solid #F8A724;
 }
 
 .blue{
@@ -55,6 +67,10 @@ ul {
 	list-style: none;
 }
 
+
+img {
+	border: 1px solid #A54044;
+}
 
 
 .logoPlayer1 {
@@ -74,7 +90,10 @@ ul {
 /* Cells content
 ==========================*/
 .cellHindrance {		
-	background:url(png/tent.png) no-repeat center center;	
+	background:url(png/tent.png);	
+	background-position: center;
+  	background-repeat: no-repeat;
+  	background-size: cover;
 	width: 50px;
 	height: 50px;
 }
