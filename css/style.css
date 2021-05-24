@@ -2,13 +2,22 @@ html, body {
 	min-width: 1100px;
 	margin-left: auto;
 	margin-right: auto;
-	background-color: #FDF27C;
+	background-color: #a3b18a;
 	color: #455D4D;
+	font-family: 'Electrolize', sans-serif;
 	
+}
+
+h1 {
+	margin-bottom: 30px;
 }
 
 h2 {
 	color: #455D4D;
+}
+
+.h5, #player1Lable,  #player2Lable {
+	color: white;
 }
 
 #playGround{
@@ -22,8 +31,12 @@ h2 {
 	border: 2px solid #A54044;	
 }
 
+.icon-link {
+	color: #3a5a40;
+}
+
 #attackPlayer2, #attackPlayer1{
-	background-color: #F8A724;
+	background-color: #3a5a40;
 }
 
 #names {
@@ -48,19 +61,19 @@ input {
 }
 
 #hello {
-	border-bottom: 2px solid #F8A724;
+	border-bottom: 2px solid #3a5a40;
 }
 
 #specialCells {
-	border-left: 2px solid #F8A724;
+	border-left: 2px solid #3a5a40;
 }
 
 .blue{
-color:blue;
+color:#3371ff;
 }
 
 .red{
-color:red;
+color:#cd5830;
 }
 
 ul {
@@ -153,3 +166,10 @@ img {
 	height: 50px;
 }
 
+.progress-bar {
+	background-color: #cd5830 !important;
+}
+
+.progress-bar.bg-premier{
+	background-color: #3371ff !important;
+}
